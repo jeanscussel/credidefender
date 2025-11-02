@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediDefender - Módulo 1: Começa Com Você</title>
+    <style>
+        /* * ===============================================
+         * ESTILOS DO STORYBOOK (CrediDefender)
+         * IA Geradora: Geradôncius 3º
+         * ===============================================
+        */
+
+        :root {
+            --neutral-light: #f0f0f0;
+            --neutral-medium: #cccccc;
+            --highlight-orange: #F07D00;
+            --green-dark: #046727;
+            --green-light: #61B01D;
+            --text-dark: #222;
+            --dialogue-bg: rgba(254, 254, 254, 0.9); /* Verde escuro com transparência */
+            --dialogue-border: var(--green-light);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #333;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* O "Álbum" principal */
+        .storybook-container {
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 16 / 9; /* Mantém a proporção 16:9 */
+            min-height: 506px; /* Altura mínima baseada na largura de 900px */
+            background-color: var(--neutral-light);
+            border: 4px solid var(--neutral-medium);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Essencial para conter os quadros */
+        }
+
+        /* Viewport que segura os quadros */
+        .frame-viewport {
+            flex-grow: 1; /* Ocupa todo o espaço, exceto a navegação */
+            position: relative;
+            background-color: #000; /* Fundo preto caso a imagem falhe */
+        }
+
+        /* Cada "Quadro" (Cena) */
+        .frame {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .frame.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
+        }
+
+        /* --- PLACEHOLDERS --- */
+
+        /* Placeholder do CENÁRIO (Fundo) */
+        .scene-background {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Placeholder do MASCOTE (Gri-Li) */
+        .scene-mascot {
+            position: absolute;
+            z-index: 30;
+            bottom: 0; /* Alinhado à base */
+            height: 35%; /* Tamanho relativo à altura do viewport */
+            max-height: 250px;
+            object-fit: contain;
+            /* Posições (pode adicionar mais) */
+            left: 20px;
+        }
+        
+        .mascot-pos-canto { left: 20px; }
+        .mascot-pos-direita { left: auto; right: 20px; }
+
+        /* --- BALÃO DE FALA --- */
+
+        .dialogue-box {
+            position: absolute;
+            z-index: 40;
+            bottom: 25px;
+            left: 20%;
+            right: 25px;
+            background-color: var(--dialogue-bg);
+            color: var(--text-dark);
+            padding: 20px;
+            border: 3px solid var(--dialogue-border);
+            border-radius: 8px;
+            min-height: 120px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            
+            /* Efeito de transição de entrada */
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInDialogue 0.5s forwards;
+            animation-delay: 0.2s; /* Espera um pouco antes de aparecer */
+        }
+        
+        /* Ajuste para quando o mascote está na direita */
+        .mascot-pos-direita + .dialogue-box {
+            left: 25px;
+            right: 20%;
+        }
+
+        @keyframes fadeInDialogue {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- NAVEGAÇÃO --- */
+
+        .navigation-controls {
+            background-color: var(--green-dark);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 3px solid var(--neutral-medium);
+            z-index: 50;
+        }
+
+        .navigation-controls button {
+            background-color: var(--highlight-orange);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .navigation-controls button:hover:not(:disabled) {
+            background-color: #d16a00; /* Laranja mais escuro */
+            transform: scale(1.05);
+        }
+
+        .navigation-controls button:disabled {
+            background-color: var(--neutral-medium);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #frame-counter {
+            color: var(--neutral-light);
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="storybook-container">
+
+        <div class="frame-viewport"> 
+
+            <div id="frame-1" class="frame active">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Outros%20cen%C3%A1rios/capa.png?raw=true" class="scene-background" alt="Cenário: Capa Módulo 1">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20sorrizo.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">             
+                </div>
+
+            <div id="frame-2" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/Mod1Q01.png?raw=true" class="scene-background" alt="Cenário: Desktop">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/mic%20direita%20close.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Opa! Testando... 1, 2, 3! Olá, pessoal! Meu nome é Gri-Li! E eu sou, digamos... sua consciência digital!</p>
+                </div>
+            </div>
+
+            <div id="frame-3" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/Mod1Q02.png?raw=true" class="scene-background" alt="Cenário: Corrente de metal robusta">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20a%20m%C3%A3o%20aberta.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Sabe, a segurança da nossa cooperativa é como esta corrente: forte, confiável e... sólida!</p>
+                </div>
+            </div>
+
+            <div id="frame-4" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/Mod1Q02.png?raw=true" class="scene-background" alt="Cenário: Corrente de metal robusta">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/close%20com%20mao%20na%20cintura.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>O que é 'Cibersegurança'? É simplesmente o ato de proteger nossos dados, computadores e redes de ataques ou acessos não autorizados. E é o trabalho de todos nós!</p>
+                </div>
+            </div>
+
+            <div id="frame-5" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/Mod1Q03.png?raw=true" class="scene-background" alt="Cenário: Cofre da Confiança">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20sorrizo.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>E o que estamos protegendo? O nosso maior tesouro... a CONFIANÇA do nosso cooperado!</p>
+                </div>
+            </div>
+
+            <div id="frame-6" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/Mod1Q02.png?raw=true" class="scene-background" alt="Cenário: Elo da corrente">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20indicador%20erguido.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>E adivinha quem são os elos dessa corrente? Você! Eu! Todos nós! Cada colaborador é um elo de proteção.</p>
+                </div>
+            </div>
+
+            <div id="frame-7" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/Mod1Q04.png?raw=true" class="scene-background" alt="Cenário: Risco de clique">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20indicador%20erguido.png?raw=true" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li em Pânico">
+                </div>
+
+            <div id="frame-8" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/Mod1Q05.png?raw=true" class="scene-background" alt="Cenário: Corrente quebrada">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20a%20m%C3%A3o%20aberta.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Viu só? Uma única ação... um clique desatento... e nossa maior proteção fica vulnerável.</p>
+                </div>
+            </div>
+
+            <div id="frame-9" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/Mod1Q05.png?raw=true class="scene-background" alt="Cenário: Corrente quebrada">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20indicador%20erguido.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Isso é o que chamamos de 'Fator Humano'. Estudos mostram que mais de 80% dos incidentes de segurança envolvem um erro humano. É por isso que você é tão importante!</p>
+                </div>
+            </div>
+
+            <div id="frame-10" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/5%20regras.png?raw=true" class="scene-background" alt="Cenário: 5 Regras de Ouro">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/Imagem18.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Mas calma! Estou aqui para ajudar! E para isso, temos as nossas 5 REGRAS DE OURO!</p>
+                </div>
+            </div>
+
+            <div id="frame-11" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/pense%20antes%20de%20clicar.png?raw=true" class="scene-background" alt="Cenário: Regra 1 - Pense">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/close%20dedo%20na%20testa.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>REGRA 1: PENSE ANTES DE CLICAR! Viu um e-mail estranho? Lembre-se do Módulo 3! Na dúvida, não clique.</p>
+                </div>
+            </div>
+
+            <div id="frame-12" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/senhas%20fortes%20e%20unicas.png?raw=true" class="scene-background" alt="Cenário: Regra 2 - Senhas">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20indicador%20erguido.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>REGRA 2: SENHAS FORTES E UNICAS! Use frases de senha longas e NUNCA as reutilize. E o MFA é obrigatório!</p>
+                </div>
+            </div>
+
+            <div id="frame-13" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/bloqueie%20seu%20acesso.png?raw=true" class="scene-background" alt="Cenário: Regra 3 - Tela Bloqueada">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20a%20m%C3%A3o%20aberta.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>REGRA 3: MESA LIMPA, TELA BLOQUEADA! Levantou da cadeira? Windows + L! Sempre!</p>
+                </div>
+            </div>
+
+            <div id="frame-14" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/proteja%20seus%20dados.png?raw=true" class="scene-background" alt="Cenário: Regra 4 - Dados">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/close%20com%20mao%20na%20cintura.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>REGRA 4: DADOS DO COOPERADO SÃO OURO! Trate os dados deles com o máximo de cuidado, como veremos no Módulo 5.</p>
+                </div>
+            </div>
+
+            <div id="frame-15" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/reporte%20atividades%20suspeitas.png?raw=true" class="scene-background" alt="Cenário: Regra 5 - Reporte">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20a%20m%C3%A3o%20aberta.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>REGRA 5: REPORTE SEM MEDO! Clicou em algo? Viu algo estranho? Avise a TI imediatamente! Você é um herói, não um culpado.</p>
+                </div>
+            </div>
+
+            <div id="frame-16" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/Mod1Q02.png?raw=true" class="scene-background" alt="Cenário: Corrente forte e intacta">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/apontando%20espectador%20direita.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Quando todos nós seguimos as regras, a nossa corrente se torna impenetrável.</p>
+                </div>
+            </div>
+
+            <div id="frame-17" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%201/Mod1Q02.png?raw=true" class="scene-background" alt="Cenário: Capa Módulo 1">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/close%20dedo%20na%20testa.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Lembre-se: a segurança da Crediseara não começa com firewalls... começa com VOCÊ! Obrigado!</p>
+                </div>
+            </div>
+
+            <div id="frame-18" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Outros%20cen%C3%A1rios/capa.png?raw=true" class="scene-background" alt="Cenário: Ir para o Quiz">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Interagindo%20com%20o%20mundo/digitando%20no%20painel.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Pronto para testar seu conhecimento? Clique em 'Próximo' para ir ao Quiz do Módulo 1!</p>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="navigation-controls">
+            <button id="prev-btn">Anterior</button>
+            <span id="frame-counter">1 / 18</span>
+            <button id="next-btn">Próximo</button>
+        </div>
+
+    </div>
+    <script>
+        /* * ===============================================
+         * JAVASCRIPT DO STORYBOOK
+         * Lógica de Navegação e Efeito Typewriter
+         * ===============================================
+        */
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Seletores ---
+            const frames = document.querySelectorAll('.frame');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counter = document.getElementById('frame-counter');
+            
+            const totalFrames = frames.length;
+            let currentFrame = 0;
+            let currentTypewriterTimeout = null; // Para gerenciar o timeout
+
+            // --- Funções ---
+
+            /**
+             * Exibe um quadro (frame) específico.
+             * @param {number} index - O índice do quadro a ser exibido.
+             */
+            function showFrame(index) {
+                // Para o efeito de máquina de escrever anterior, se estiver em execução
+                if (currentTypewriterTimeout) {
+                    clearTimeout(currentTypewriterTimeout);
+                }
+
+                frames.forEach((frame, i) => {
+                    frame.classList.remove('active');
+                    if (i === index) {
+                        frame.classList.add('active');
+                        
+                        // Inicia o efeito de máquina de escrever para o novo quadro
+                        const dialogueP = frame.querySelector('.dialogue-box p');
+                        if (dialogueP) {
+                            // Limpa o conteúdo antes de re-digitar
+                            dialogueP.innerHTML = ''; 
+                            typeWords(dialogueP);
+                        }
+                    }
+                });
+                
+                updateNavigation(index);
+            }
+
+            /**
+             * Atualiza o estado dos botões de navegação e do contador.
+             * @param {number} index - O índice do quadro atual.
+             */
+            function updateNavigation(index) {
+                currentFrame = index;
+                counter.textContent = `${index + 1} / ${totalFrames}`;
+                
+                prevBtn.disabled = (index === 0);
+                nextBtn.disabled = (index === totalFrames - 1);
+            }
+
+            /**
+             * Aplica o efeito de máquina de escrever POR PALAVRA.
+             * @param {HTMLElement} element - O elemento <p> que contém o diálogo.
+             */
+            function typeWords(element) {
+                // Pega o texto completo do atributo data-text
+                const fullText = element.getAttribute('data-text');
+                if (!fullText) return; // Não faz nada se não houver texto
+
+                const words = fullText.split(' ');
+                let i = 0;
+                
+                function addWord() {
+                    if (i < words.length) {
+                        element.innerHTML += words[i] + ' ';
+                        i++;
+                        currentTypewriterTimeout = setTimeout(addWord, 120); // Velocidade (120ms por palavra)
+                    } else {
+                        currentTypewriterTimeout = null; // Limpa o timeout quando terminar
+                    }
+                }
+                
+                addWord(); // Inicia o processo
+            }
+
+            // --- Inicialização ---
+
+            // 1. Armazena o texto original de todos os diálogos em um atributo 'data-text'
+            //    Isso é crucial para que possamos re-digitar o texto ao voltar.
+            frames.forEach(frame => {
+                const dialogueP = frame.querySelector('.dialogue-box p');
+                if (dialogueP) {
+                    dialogueP.setAttribute('data-text', dialogueP.textContent.trim());
+                    dialogueP.innerHTML = ''; // Limpa o conteúdo inicial
+                }
+            });
+
+            // 2. Adiciona os Event Listeners aos botões
+            nextBtn.addEventListener('click', () => {
+                if (currentFrame < totalFrames - 1) {
+                    showFrame(currentFrame + 1);
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentFrame > 0) {
+                    showFrame(currentFrame - 1);
+                }
+            });
+
+            // 3. Exibe o primeiro quadro (Quadro 0)
+            showFrame(0);
+        });
+    </script>
+
+</body>
+</html>

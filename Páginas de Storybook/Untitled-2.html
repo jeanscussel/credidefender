@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediDefender - Módulo 2: A Mente do Fraudador</title>
+    <style>
+        /* * ===============================================
+         * ESTILOS DO STORYBOOK (CrediDefender)
+         * IA Geradora: Geradôncius 3º
+         * ===============================================
+        */
+
+        :root {
+            --neutral-light: #f0f0f0;
+            --neutral-medium: #cccccc;
+            --highlight-orange: #F07D00;
+            --green-dark: #046727;
+            --green-light: #61B01D;
+            --text-dark: #222;
+            --dialogue-bg: rgba(4, 103, 39, 0.9); /* Verde escuro com transparência */
+            --dialogue-border: var(--green-light);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #333;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* O "Álbum" principal */
+        .storybook-container {
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 16 / 9; /* Mantém a proporção 16:9 */
+            min-height: 506px; /* Altura mínima baseada na largura de 900px */
+            background-color: var(--neutral-light);
+            border: 4px solid var(--highlight-orange);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Essencial para conter os quadros */
+        }
+
+        /* Viewport que segura os quadros */
+        .frame-viewport {
+            flex-grow: 1; /* Ocupa todo o espaço, exceto a navegação */
+            position: relative;
+            background-color: #000; /* Fundo preto caso a imagem falhe */
+        }
+
+        /* Cada "Quadro" (Cena) */
+        .frame {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .frame.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
+        }
+
+        /* --- PLACEHOLDERS --- */
+
+        /* Placeholder do CENÁRIO (Fundo) */
+        .scene-background {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Placeholder do MASCOTE (Gri-Li) */
+        .scene-mascot {
+            position: absolute;
+            z-index: 30;
+            bottom: 0; /* Alinhado à base */
+            height: 35%; /* Tamanho relativo à altura do viewport */
+            max-height: 250px;
+            object-fit: contain;
+        }
+        
+        /* Posições do Mascote */
+        .mascot-pos-canto { left: 20px; }
+        .mascot-pos-direita { left: auto; right: 20px; }
+
+        /* --- BALÃO DE FALA --- */
+
+        .dialogue-box {
+            position: absolute;
+            z-index: 40;
+            bottom: 25px;
+            left: 20%; /* Posição padrão (quando mascote está à esquerda) */
+            right: 25px;
+            background-color: var(--dialogue-bg);
+            color: #fff;
+            padding: 20px;
+            border: 3px solid var(--dialogue-border);
+            border-radius: 8px;
+            min-height: 120px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            
+            /* Efeito de transição de entrada */
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInDialogue 0.5s forwards;
+            animation-delay: 0.2s; /* Espera um pouco antes de aparecer */
+        }
+        
+        /* Ajuste para quando o mascote está na direita */
+        .mascot-pos-direita + .dialogue-box {
+            left: 25px;
+            right: 20%;
+        }
+
+        @keyframes fadeInDialogue {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- NAVEGAÇÃO --- */
+
+        .navigation-controls {
+            background-color: var(--green-dark);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 3px solid var(--highlight-orange);
+            z-index: 50;
+        }
+
+        .navigation-controls button {
+            background-color: var(--highlight-orange);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .navigation-controls button:hover:not(:disabled) {
+            background-color: #d16a00; /* Laranja mais escuro */
+            transform: scale(1.05);
+        }
+
+        .navigation-controls button:disabled {
+            background-color: var(--neutral-medium);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #frame-counter {
+            color: var(--neutral-light);
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="storybook-container">
+
+        <div class="frame-viewport">
+
+            <div id="frame-1" class="frame active">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Outros%20cen%C3%A1rios/capa.png?raw=true" class="scene-background" alt="Cenário: Capa Módulo 2">
+                
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(PENSADOR)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                
+                </div>
+
+            <div id="frame-2" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/palco%20sombrio.png?raw=true" class="scene-background" alt="Cenário: Palco de teatro escuro">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/close%20abanando.png?raw=true" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Olá! No módulo passado, vimos que NÓS somos a defesa. Agora, vamos entender o ataque. Vamos estudar a arma mais usada pelos criminosos...</p>
+                </div>
+            </div>
+
+            <div id="frame-3" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/palco%20sombrio.png?raw=true" class="scene-background" alt="Cenário: Palco de teatro (Reuso)">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/close%20com%20mao%20na%20cintura.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>A... ENGENHARIA SOCIAL! É a arte de manipular pessoas para que elas quebrem as regras de segurança.</p>
+                </div>
+            </div>
+
+            <div id="frame-4" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_yj0efmyj0efmyj0e.png?raw=true" class="scene-background" alt="Cenário: Infográfico Cérebro vs Computador">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/close%20dedo%20na%20testa.png?raw=true" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Lembre-se: o Engenheiro Social não ataca seu computador, ele ataca sua mente! Ele explora nossa vontade de ajudar, nosso medo e nossa curiosidade.</p>
+                </div>
+            </div>
+
+            <div id="frame-5" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_da8jhgda8jhgda8j%20(1).png?raw=true" class="scene-background" alt="Cenário: Colaborador estressado com relógio">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20indicador%20erguido.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>O primeiro gatilho: A PRESSA! O fraudador cria uma urgência falsa para que você não tenha tempo de pensar.</p>
+                </div>
+            </div>
+
+            <div id="frame-6" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_da8jhgda8jhgda8j%20(1).png?raw=true" class="scene-background" alt="Cenário: Colaborador estressado (Reuso)">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20a%20m%C3%A3o%20aberta.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Exemplo: Um e-mail FALSO do seu 'chefe' dizendo: 'Preciso que pague este boleto AGORA ou perderemos o cliente!' É mentira!</p>
+                </div>
+            </div>
+
+            <div id="frame-7" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_da8jhgda8jhgda8j%20(2).png?raw=true" class="scene-background" alt="Cenário: Colaboradora com medo e sombra">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20dois%20dedos%20erguidos.png?raw=true" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>O segundo gatilho: O MEDO! Eles fingem ser uma autoridade (como o TI ou um policial) para intimidar você.</p>
+                </div>
+            </div>
+
+            <div id="frame-8" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_da8jhgda8jhgda8j%20(2).png?raw=true" class="scene-background" alt="Cenário: Colaboradora com medo (Reuso)">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20a%20m%C3%A3o%20aberta.png?raw=true" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Exemplo: Uma ligação FALSA dizendo: 'Sua conta será bloqueada em 5 minutos se não confirmar sua senha AGORA!'. A Crediseara NUNCA fará isso.</p>
+                </div>
+            </div>
+
+            <div id="frame-9" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_da8jhgda8jhgda8j%20(3).png?raw=true" class="scene-background" alt="Cenário: E-mail com isca de presente">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/close%20com%20mao%20na%20cintura.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>O terceiro gatilho: A CURIOSIDADE! Eles usam 'iscas' (baiting) para fazer você clicar.</p>
+                </div>
+            </div>
+
+            <div id="frame-10" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_da8jhgda8jhgda8j%20(3).png?raw=true" class="scene-background" alt="Cenário: E-mail com isca (Reuso)">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/close%20mao%20aberta%20direira.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Exemplo: 'Você ganhou um prêmio!' ou 'Veja as fotos da festa que vazaram!'. Se parece bom demais para ser verdade, é golpe!</p>
+                </div>
+            </div>
+
+            <div id="frame-11" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_da8jhgda8jhgda8j%20(4).png?raw=true" class="scene-background" alt="Cenário: Central de comando com ícones de Telefone e WhatsApp">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/close%20mao%20aberta%20direira.png?raw=true" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Eles atacam por todos os lados! Não só por e-mail.</p>
+                </div>
+            </div>
+
+            <div id="frame-12" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_da8jhgda8jhgda8j%20(4).png?raw=true" class="scene-background" alt="Cenário: Central de comando com foco em Telefone">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20a%20m%C3%A3o%20aberta.png?raw=true" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>VISHING (Voice Phishing): É o golpe por VOZ. Eles te ligam fingindo ser do banco. Desligue e ligue você mesmo para o número oficial da Crediseara!</p>
+                </div>
+            </div>
+
+            <div id="frame-13" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_da8jhgda8jhgda8j%20(4).png?raw=true" class="scene-background" alt="Cenário: Central de comando com foco em WhatsApp">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20a%20m%C3%A3o%20aberta.png?raw=true" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>SMISHING (SMS Phishing): É o golpe por WhatsApp ou SMS. Recebeu um link estranho? Não clique! É golpe!</p>
+                </div>
+            </div>
+
+            <div id="frame-14" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_da8jhgda8jhgda8j%20(5).png?raw=true" class="scene-background" alt="Cenário: Escudo de Defesa (Parar, Pensar, Verificar)">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/falando%20com%20sorrizo.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Contra tudo isso, use o escudo de 3 etapas! Recebeu um pedido estranho? PARE!</p>
+                </div>
+            </div>
+
+            <div id="frame-15" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Modulo%202/Gemini_Generated_Image_da8jhgda8jhgda8j%20(5).png?raw=true" class="scene-background" alt="Cenário: Escudo de Defesa (Reuso)">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/close%20dedo%20na%20testa.png?raw=true" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>PENSE: Isso faz sentido? Meu chefe pediria um PIX pelo WhatsApp? VERIFIQUE: Ligue para a pessoa em um número que você JÁ TENHA. Não use o número do e-mail!</p>
+                </div>
+            </div>
+
+            <div id="frame-16" class="frame">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Cen%C3%A1rios/Outros%20cen%C3%A1rios/capa.png?raw=true" class="scene-background" alt="Cenário: Ir para o Quiz">
+                <img src="https://github.com/jeanscussel/credidefender/blob/main/Sem%20fundo/Plano%20m%C3%A9dio/Imagem18.png?raw=true" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Entendeu a mente do fraudador? Ótimo! Clique em 'Próximo' para ir ao Quiz do Módulo 2!</p>
+                </div>
+            </div>
+
+
+        </div> <div class="navigation-controls">
+            <button id="prev-btn">Anterior</button>
+            <span id="frame-counter">1 / 16</span>
+            <button id="next-btn">Próximo</button>
+        </div>
+
+    </div> <script>
+        /* * ===============================================
+         * JAVASCRIPT DO STORYBOOK
+         * Lógica de Navegação e Efeito Typewriter
+         * (Não requer modificação, funciona para N quadros)
+         * ===============================================
+        */
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Seletores ---
+            const frames = document.querySelectorAll('.frame');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counter = document.getElementById('frame-counter');
+            
+            const totalFrames = frames.length;
+            let currentFrame = 0;
+            let currentTypewriterTimeout = null; // Para gerenciar o timeout
+
+            // --- Funções ---
+
+            /**
+             * Exibe um quadro (frame) específico.
+             * @param {number} index - O índice do quadro a ser exibido.
+             */
+            function showFrame(index) {
+                // Para o efeito de máquina de escrever anterior, se estiver em execução
+                if (currentTypewriterTimeout) {
+                    clearTimeout(currentTypewriterTimeout);
+                }
+
+                frames.forEach((frame, i) => {
+                    frame.classList.remove('active');
+                    if (i === index) {
+                        frame.classList.add('active');
+                        
+                        // Inicia o efeito de máquina de escrever para o novo quadro
+                        const dialogueP = frame.querySelector('.dialogue-box p');
+                        if (dialogueP) {
+                            // Limpa o conteúdo antes de re-digitar
+                            dialogueP.innerHTML = ''; 
+                            typeWords(dialogueP);
+                        }
+                    }
+                });
+                
+                updateNavigation(index);
+            }
+
+            /**
+             * Atualiza o estado dos botões de navegação e do contador.
+             * @param {number} index - O índice do quadro atual.
+             */
+            function updateNavigation(index) {
+                currentFrame = index;
+                counter.textContent = `${index + 1} / ${totalFrames}`;
+                
+                prevBtn.disabled = (index === 0);
+                nextBtn.disabled = (index === totalFrames - 1);
+            }
+
+            /**
+             * Aplica o efeito de máquina de escrever POR PALAVRA.
+             * @param {HTMLElement} element - O elemento <p> que contém o diálogo.
+             */
+            function typeWords(element) {
+                // Pega o texto completo do atributo data-text
+                const fullText = element.getAttribute('data-text');
+                if (!fullText) return; // Não faz nada se não houver texto
+
+                const words = fullText.split(' ');
+                let i = 0;
+                
+                function addWord() {
+                    if (i < words.length) {
+                        element.innerHTML += words[i] + ' ';
+                        i++;
+                        currentTypewriterTimeout = setTimeout(addWord, 120); // Velocidade (120ms por palavra)
+                    } else {
+                        currentTypewriterTimeout = null; // Limpa o timeout quando terminar
+                    }
+                }
+                
+                addWord(); // Inicia o processo
+            }
+
+            // --- Inicialização ---
+
+            // 1. Armazena o texto original de todos os diálogos em um atributo 'data-text'
+            //    Isso é crucial para que possamos re-digitar o texto ao voltar.
+            frames.forEach(frame => {
+                const dialogueP = frame.querySelector('.dialogue-box p');
+                if (dialogueP) {
+                    dialogueP.setAttribute('data-text', dialogueP.textContent.trim());
+                    dialogueP.innerHTML = ''; // Limpa o conteúdo inicial
+                }
+            });
+
+            // 2. Adiciona os Event Listeners aos botões
+            nextBtn.addEventListener('click', () => {
+                if (currentFrame < totalFrames - 1) {
+                    showFrame(currentFrame + 1);
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentFrame > 0) {
+                    showFrame(currentFrame - 1);
+                }
+            });
+
+            // 3. Exibe o primeiro quadro (Quadro 0)
+            showFrame(0);
+        });
+    </script>
+
+</body>
+</html>
