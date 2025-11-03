@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediDefender - Módulo 8: Juntos Somos Mais Fortes!</title>
+    <style>
+        /* * ===============================================
+         * ESTILOS DO STORYBOOK (CrediDefender)
+         * IA Geradora: Geradôncius 3º
+         * ===============================================
+        */
+
+        :root {
+            --neutral-light: #f0f0f0;
+            --neutral-medium: #cccccc;
+            --highlight-orange: #F07D00;
+            --green-dark: #046727;
+            --green-light: #61B01D;
+            --text-dark: #222;
+            --dialogue-bg: rgba(4, 103, 39, 0.9); /* Verde escuro com transparência */
+            --dialogue-border: var(--green-light);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #333;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* O "Álbum" principal */
+        .storybook-container {
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 16 / 9; /* Mantém a proporção 16:9 */
+            min-height: 506px; /* Altura mínima baseada na largura de 900px */
+            background-color: var(--neutral-light);
+            border: 4px solid var(--highlight-orange);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Essencial para conter os quadros */
+        }
+
+        /* Viewport que segura os quadros */
+        .frame-viewport {
+            flex-grow: 1; /* Ocupa todo o espaço, exceto a navegação */
+            position: relative;
+            background-color: #000; /* Fundo preto caso a imagem falhe */
+        }
+
+        /* Cada "Quadro" (Cena) */
+        .frame {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .frame.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
+        }
+
+        /* --- PLACEHOLDERS --- */
+
+        /* Placeholder do CENÁRIO (Fundo) */
+        .scene-background {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Placeholder do MASCOTE (Gri-Li) */
+        .scene-mascot {
+            position: absolute;
+            z-index: 30;
+            bottom: 0; /* Alinhado à base */
+            height: 35%; /* Tamanho relativo à altura do viewport */
+            max-height: 250px;
+            object-fit: contain;
+            /* Posições (pode adicionar mais) */
+            left: 20px;
+        }
+        
+        .mascot-pos-canto { left: 20px; }
+        .mascot-pos-direita { left: auto; right: 20px; }
+
+        /* --- BALÃO DE FALA --- */
+
+        .dialogue-box {
+            position: absolute;
+            z-index: 40;
+            bottom: 25px;
+            left: 20%;
+            right: 25px;
+            background-color: var(--dialogue-bg);
+            color: #fff;
+            padding: 20px;
+            border: 3px solid var(--dialogue-border);
+            border-radius: 8px;
+            min-height: 120px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            
+            /* Efeito de transição de entrada */
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInDialogue 0.5s forwards;
+            animation-delay: 0.2s; /* Espera um pouco antes de aparecer */
+        }
+        
+        /* Ajuste para quando o mascote está na direita */
+        .mascot-pos-direita + .dialogue-box {
+            left: 25px;
+            right: 20%;
+        }
+
+        @keyframes fadeInDialogue {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- NAVEGAÇÃO --- */
+
+        .navigation-controls {
+            background-color: var(--green-dark);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 3px solid var(--highlight-orange);
+            z-index: 50;
+        }
+
+        .navigation-controls button {
+            background-color: var(--highlight-orange);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .navigation-controls button:hover:not(:disabled) {
+            background-color: #d16a00; /* Laranja mais escuro */
+            transform: scale(1.05);
+        }
+
+        .navigation-controls button:disabled {
+            background-color: var(--neutral-medium);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #frame-counter {
+            color: var(--neutral-light);
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="storybook-container">
+
+        <div class="frame-viewport">
+
+            <div id="frame-1" class="frame active">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+CAPA+MÓDULO+8" class="scene-background" alt="Cenário: Capa Módulo 8 - Juntos Somos Mais Fortes!">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(ACENANDO)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li acenando">
+                </div>
+
+            <div id="frame-2" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+MESA+DE+TRABALHO+(JOÃO)" class="scene-background" alt="Cenário: Colaborador João distraído na mesa">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Chegamos ao nosso último módulo! Vimos senhas, e-mails, crachás... mas falta uma coisa: o que fazer quando algo... dá errado?</p>
+                </div>
+            </div>
+
+            <div id="frame-3" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+E-MAIL+URGENTE" class="scene-background" alt="Cenário: E-mail URGENTE piscando na tela">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(DESCONFIADO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li desconfiado">
+                <div class="dialogue-box">
+                    <p>Afinal, somos humanos. Errar acontece. O mais importante é o que fazemos DEPOIS do erro.</p>
+                </div>
+            </div>
+
+            <div id="frame-4" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+CLOSE-UP+NO+MOUSE+(CLIQUE)" class="scene-background" alt="Cenário: Close-up no mouse clicando">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(ASSUSTADO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li assustado">
+                <div class="dialogue-box">
+                    <p>(Som de clique: CLIC!) Ops...</p>
+                </div>
+            </div>
+
+            <div id="frame-5" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+TELA+PRETA+COM+POP-UP" class="scene-background" alt="Cenário: Tela do computador fica preta com pop-up">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(PREOCUPADO)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li preocupado">
+                </div>
+
+            <div id="frame-6" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+JOÃO+EM+PÂNICO+(BALÃO)" class="scene-background" alt="Cenário: Close-up no rosto de João em pânico">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>AÍ BATE O MEDO, NÉ? 'Vou levar uma bronca!' 'Vão me culpar!' 'Vou ser demitido!'</p>
+                </div>
+            </div>
+
+            <div id="frame-7" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+BALÃO+DE+PÂNICO+DE+JOÃO" class="scene-background" alt="Cenário: Balão de pânico de João">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(APONTANDO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li apontando">
+                <div class="dialogue-box">
+                    <p>Sabe quem ADORA esse medo? O criminoso! A sua hesitação é o maior aliado dele!</p>
+                </div>
+            </div>
+
+            <div id="frame-8" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+JOÃO+TENTANDO+CONSERTAR" class="scene-background" alt="Cenário: João digitando freneticamente">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(NÃO!)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li fazendo sinal de 'não'">
+                <div class="dialogue-box">
+                    <p>E o que fazemos no pânico? Tentamos consertar sozinhos... NÃO FAÇA ISSO! Você pode, sem querer, apagar pistas vitais para a equipe de TI.</p>
+                </div>
+            </div>
+
+            <div id="frame-9" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+MÃOS+DE+JOÃO+NO+TECLADO" class="scene-background" alt="Cenário: Mãos de João no teclado">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(SEGURANDO+MÃOS)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li segurando as mãos de João">
+                <div class="dialogue-box">
+                    <p>Calma, João! A sua única e MAIS IMPORTANTE responsabilidade agora é uma só...</p>
+                </div>
+            </div>
+
+            <div id="frame-10" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+CARTAZ+(SEM+BRONCA)" class="scene-background" alt="Cenário: Cartaz 'Cultura Livre de Culpa'">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Aqui na cooperativa, nós temos uma 'Cultura Livre de Culpa'. O foco não é achar um culpado, é achar a SOLUÇÃO!</p>
+                </div>
+            </div>
+
+            <div id="frame-11" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+CABO+DE+REDE" class="scene-background" alt="Cenário: Cabo de rede conectado">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(CAINDO+CÔMICO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li caindo ao puxar o cabo">
+                <div class="dialogue-box">
+                    <p>Primeiro: se possível, desconecte a máquina da rede! (Puxa... pesado!)</p>
+                </div>
+            </div>
+
+            <div id="frame-12" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+JOÃO+NO+TELEFONE+(ÍCONE+TI)" class="scene-background" alt="Cenário: João ao telefone com ícone de herói de TI">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(JOINHA)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li fazendo joinha">
+                <div class="dialogue-box">
+                    <p>Segundo, e mais importante: LIGUE! Avise seu gestor e a equipe de TI IMEDIATAMENTE!</p>
+                </div>
+            </div>
+
+            <div id="frame-13" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+EQUIPE+DE+TI+CHEGANDO" class="scene-background" alt="Cenário: Equipe de TI chega focada">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(OBSERVANDO)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li observando">
+                <div class="dialogue-box">
+                    <p>Boa, João! Obrigado por avisar rápido. Vamos assumir daqui.</p>
+                </div>
+            </div>
+
+            <div id="frame-14" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+TI+ANALISANDO+(AMEAÇA+CONTIDA)" class="scene-background" alt="Cenário: Ameaça contida em 'jaula' digital">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Quando você reporta, o incidente vira um estudo de caso. Aprendemos como evitar que aconteça com outros colegas!</p>
+                </div>
+            </div>
+
+            <div id="frame-15" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+JOÃO+SURPRESO" class="scene-background" alt="Cenário: João surpreso e orgulhoso">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(COM+MEDALHA)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li colocando medalha em João">
+                <div class="dialogue-box">
+                    <p>Viu só? Você não é o problema, você é a SOLUÇÃO! Reportar rápido faz de você um verdadeiro Herói da Segurança!</p>
+                </div>
+            </div>
+
+            <div id="frame-16" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+GRÁFICO+(REPORTES+SUBINDO)" class="scene-background" alt="Cenário: Gráfico mostrando aumento de reportes">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(APONTANDO+GRÁFICO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li apontando para o gráfico">
+                <div class="dialogue-box">
+                    <p>Nosso sucesso não é medido pela ausência de erros, mas pelo AUMENTO de reportes! Isso mostra que estamos atentos!</p>
+                </div>
+            </div>
+
+            <div id="frame-17" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+FUNDO+DE+CELEBRAÇÃO" class="scene-background" alt="Cenário: Fundo de celebração com confete">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(CHAPÉU+DE+FESTA)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li com chapéu de festa">
+                <div class="dialogue-box">
+                    <p>E temos que celebrar essas vitórias! Cada reporte rápido é uma perda evitada para nossa cooperativa e nossos cooperados.</p>
+                </div>
+            </div>
+
+            <div id="frame-18" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+PÓDIO+(NOTEBOOK+FECHADO)" class="scene-background" alt="Cenário: Grilo em pódio de notebook">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(NO+PÓDIO)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li no pódio">
+                <div class="dialogue-box">
+                    <p>A segurança é uma maratona, pessoal. E vencemos ela juntos. Cada um de vocês é um sensor vital para nossa defesa.</p>
+                </div>
+            </div>
+
+            <div id="frame-19" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+FUNDO+NEUTRO" class="scene-background" alt="Cenário: Fundo neutro">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(ACENANDO+DESPEDIDA)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li acenando em despedida">
+                <div class="dialogue-box">
+                    <p>Obrigado por essa jornada! Lembre-se: na dúvida, não hesite. Avise! Contamos com você!</p>
+                </div>
+            </div>
+
+            <div id="frame-20" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+CAPA+FINAL+(LOGO)" class="scene-background" alt="Cenário: Juntos Somos Mais Fortes!">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                </div>
+
+
+        </div> <div class="navigation-controls">
+            <button id="prev-btn">Anterior</button>
+            <span id="frame-counter">1 / 20</span>
+            <button id="next-btn">Próximo</button>
+        </div>
+
+    </div> <script>
+        /* * ===============================================
+         * JAVASCRIPT DO STORYBOOK
+         * Lógica de Navegação e Efeito Typewriter
+         * IA Geradora: Geradôncius 3º
+         * ===============================================
+        */
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Seletores ---
+            const frames = document.querySelectorAll('.frame');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counter = document.getElementById('frame-counter');
+            
+            const totalFrames = frames.length;
+            let currentFrame = 0;
+            let currentTypewriterTimeout = null; // Para gerenciar o timeout
+
+            // --- Funções ---
+
+            /**
+             * Exibe um quadro (frame) específico.
+             * @param {number} index - O índice do quadro a ser exibido.
+             */
+            function showFrame(index) {
+                // Para o efeito de máquina de escrever anterior, se estiver em execução
+                if (currentTypewriterTimeout) {
+                    clearTimeout(currentTypewriterTimeout);
+                }
+
+                frames.forEach((frame, i) => {
+                    frame.classList.remove('active');
+                    if (i === index) {
+                        frame.classList.add('active');
+                        
+                        // Inicia o efeito de máquina de escrever para o novo quadro
+                        const dialogueP = frame.querySelector('.dialogue-box p');
+                        if (dialogueP) {
+                            // Limpa o conteúdo antes de re-digitar
+                            dialogueP.innerHTML = ''; 
+                            typeWords(dialogueP);
+                        }
+                    }
+                });
+                
+                updateNavigation(index);
+            }
+
+            /**
+             * Atualiza o estado dos botões de navegação e do contador.
+             * @param {number} index - O índice do quadro atual.
+             */
+            function updateNavigation(index) {
+                currentFrame = index;
+                counter.textContent = `${index + 1} / ${totalFrames}`;
+                
+                prevBtn.disabled = (index === 0);
+
+                // *** MODIFICAÇÃO PARA O BOTÃO DO QUIZZ ***
+                if (index === totalFrames - 1) {
+                    // Último quadro
+                    nextBtn.textContent = 'IR PARA O QUIZZ';
+                    nextBtn.disabled = false; // Garante que está habilitado
+                } else {
+                    // Quadros normais
+                    nextBtn.textContent = 'Próximo';
+                    nextBtn.disabled = false;
+                }
+            }
+
+            /**
+             * Aplica o efeito de máquina de escrever POR PALAVRA.
+             * @param {HTMLElement} element - O elemento <p> que contém o diálogo.
+             */
+            function typeWords(element) {
+                // Pega o texto completo do atributo data-text
+                const fullText = element.getAttribute('data-text');
+                if (!fullText) return; // Não faz nada se não houver texto
+
+                const words = fullText.split(' ');
+                let i = 0;
+                
+                function addWord() {
+                    if (i < words.length) {
+                        element.innerHTML += words[i] + ' ';
+                        i++;
+                        currentTypewriterTimeout = setTimeout(addWord, 120); // Velocidade (120ms por palavra)
+                    } else {
+                        currentTypewriterTimeout = null; // Limpa o timeout quando terminar
+                    }
+                }
+                
+                addWord(); // Inicia o processo
+            }
+
+            // --- Inicialização ---
+
+            // 1. Armazena o texto original de todos os diálogos em um atributo 'data-text'
+            //    Isso é crucial para que possamos re-digitar o texto ao voltar.
+            frames.forEach(frame => {
+                const dialogueP = frame.querySelector('.dialogue-box p');
+                if (dialogueP) {
+                    dialogueP.setAttribute('data-text', dialogueP.textContent.trim());
+                    dialogueP.innerHTML = ''; // Limpa o conteúdo inicial
+                }
+            });
+
+            // 2. Adiciona os Event Listeners aos botões
+            nextBtn.addEventListener('click', () => {
+                if (currentFrame < totalFrames - 1) {
+                    // Ainda não é o último quadro, apenas avança
+                    showFrame(currentFrame + 1);
+                } else if (currentFrame === totalFrames - 1) {
+                    // *** MODIFICAÇÃO PARA O BOTÃO DO QUIZZ ***
+                    // É o último quadro, hora de ir para o Quizz
+                    
+                    // ==========================================================
+                    // ATENÇÃO: Insira o link do seu Quizz do Módulo 8 abaixo!
+                    // ==========================================================
+                    
+                    console.log('Ação: Ir para o Quizz!');
+                    // window.location.href = 'LINK_PARA_SEU_QUIZZ_MODULO_8.html'; 
+                    
+                    // ==========================================================
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentFrame > 0) {
+                    showFrame(currentFrame - 1);
+                }
+            });
+
+            // 3. Exibe o primeiro quadro (Quadro 0)
+            showFrame(0);
+        });
+    </script>
+
+</body>
+</html>
