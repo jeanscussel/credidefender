@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediDefender - Módulo 2: Segurança 360 Graus</title>
+    <style>
+        /* * ===============================================
+         * ESTILOS DO STORYBOOK (CrediDefender)
+         * IA Geradora: Geradôncius 3º
+         * Módulo: Segurança 360 Graus
+         * ===============================================
+        */
+
+        :root {
+            --neutral-light: #f0f0f0;
+            --neutral-medium: #cccccc;
+            --highlight-orange: #F07D00;
+            --green-dark: #046727;
+            --green-light: #61B01D;
+            --text-dark: #222;
+            --dialogue-bg: rgba(4, 103, 39, 0.9); /* Verde escuro com transparência */
+            --dialogue-border: var(--green-light);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #333;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* O "Álbum" principal */
+        .storybook-container {
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 16 / 9; /* Mantém a proporção 16:9 */
+            min-height: 506px; /* Altura mínima baseada na largura de 900px */
+            background-color: var(--neutral-light);
+            border: 4px solid var(--highlight-orange);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Essencial para conter os quadros */
+        }
+
+        /* Viewport que segura os quadros */
+        .frame-viewport {
+            flex-grow: 1; /* Ocupa todo o espaço, exceto a navegação */
+            position: relative;
+            background-color: #000; /* Fundo preto caso a imagem falhe */
+        }
+
+        /* Cada "Quadro" (Cena) */
+        .frame {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .frame.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
+        }
+
+        /* --- PLACEHOLDERS --- */
+
+        /* Placeholder do CENÁRIO (Fundo) */
+        .scene-background {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Placeholder do MASCOTE (Gri-Li) */
+        .scene-mascot {
+            position: absolute;
+            z-index: 30;
+            bottom: 0; /* Alinhado à base */
+            height: 35%; /* Tamanho relativo à altura do viewport */
+            max-height: 250px;
+            object-fit: contain;
+        }
+        
+        /* Posição Padrão (Esquerda) */
+        .mascot-pos-canto { 
+            left: 20px; 
+        }
+        
+        /* Posição Direita */
+        .mascot-pos-direita { 
+            left: auto; 
+            right: 20px; 
+        }
+
+        /* --- BALÃO DE FALA --- */
+
+        .dialogue-box {
+            position: absolute;
+            z-index: 40;
+            bottom: 25px;
+            left: 20%; /* Padrão (quando mascote está à esquerda) */
+            right: 25px;
+            background-color: var(--dialogue-bg);
+            color: #fff;
+            padding: 20px;
+            border: 3px solid var(--dialogue-border);
+            border-radius: 8px;
+            min-height: 120px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            
+            /* Efeito de transição de entrada */
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInDialogue 0.5s forwards;
+            animation-delay: 0.2s; /* Espera um pouco antes de aparecer */
+        }
+        
+        /* Ajuste para quando o mascote está na direita */
+        .mascot-pos-direita + .dialogue-box {
+            left: 25px;
+            right: 20%;
+        }
+
+        @keyframes fadeInDialogue {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* --- EFEITO MÁQUINA DE ESCREVER (TYPEWRITER) --- */
+        /* O JS armazena o texto, limpa o <p> e re-adiciona palavra por palavra. */
+        /* Este cursor é opcional, mas dá um bom efeito visual durante a "digitação" */
+        .dialogue-box p::after {
+            content: '▋';
+            animation: blink 0.7s infinite;
+            opacity: 1;
+        }
+        .dialogue-box p:not(.typing-done)::after {
+             content: '▋';
+             animation: blink 0.7s infinite;
+        }
+         .dialogue-box p.typing-done::after {
+            content: '';
+            animation: none;
+         }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* --- NAVEGAÇÃO --- */
+
+        .navigation-controls {
+            background-color: var(--green-dark);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 3px solid var(--highlight-orange);
+            z-index: 50;
+        }
+
+        .navigation-controls button {
+            background-color: var(--highlight-orange);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
+            min-width: 120px; /* Garante tamanho mínimo */
+        }
+
+        .navigation-controls button:hover:not(:disabled) {
+            background-color: #d16a00; /* Laranja mais escuro */
+            transform: scale(1.05);
+        }
+
+        .navigation-controls button:disabled {
+            background-color: var(--neutral-medium);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #frame-counter {
+            color: var(--neutral-light);
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="storybook-container">
+
+        <div class="frame-viewport">
+
+            <div id="frame-1" class="frame active">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+CAPA+MÓDULO+360" class="scene-background" alt="Cenário: Capa Módulo Segurança 360 Graus">
+                
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(BINÓCULOS)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li com binóculos">
+                
+                </div>
+
+            <div id="frame-2" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+ÍCONES+DIGITAL+E+FÍSICO" class="scene-background" alt="Cenário: Ícones Digital e Físico">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(APONTANDO)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li apontando">
+                <div class="dialogue-box">
+                    <p>Olá! Hoje vamos falar de segurança 360 graus! Não adianta proteger só o computador, se o perigo estiver bem... aqui, do nosso lado!</p>
+                </div>
+            </div>
+
+            <div id="frame-3" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+MESA+BAGUNÇADA+(SENHA)" class="scene-background" alt="Cenário: Mesa bagunçada com post-it de senha">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(PREOCUPADO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li preocupado">
+                <div class="dialogue-box">
+                    <p>Puxa... essa mesa está praticamente gritando 'me roube'!</p>
+                </div>
+            </div>
+
+            <div id="frame-4" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+VILÃO+ESPIANDO+MESA" class="scene-background" alt="Cenário: Figura sombreada espiando a mesa">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(ESPIANDO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li espiando">
+                <div class="dialogue-box">
+                    <p>Um minuto de distração é tudo que alguém precisa para 'pescar por cima do ombro' (shoulder surfing) e levar informações confidenciais!</p>
+                </div>
+            </div>
+
+            <div id="frame-5" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+MESA+LIMPA+(GAVETA)" class="scene-background" alt="Cenário: Mesa limpa e papéis guardados">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(ALEGRE)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li alegre">
+                <div class="dialogue-box">
+                    <p>Vamos à Prática 1: Política da Mesa Limpa! Se não estiver usando, está guardado. Se não precisar mais, deve ser triturado!</p>
+                </div>
+            </div>
+
+            <div id="frame-6" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+PC+DESBLOQUEADO+(CAFÉ)" class="scene-background" alt="Cenário: Computador desbloqueado, dono no café">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(DÚVIDA)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li com dúvida">
+                <div class="dialogue-box">
+                    <p>A mesa está limpa... mas e o computador? Deixar a tela desbloqueada é como sair de casa com a porta escancarada!</p>
+                </div>
+            </div>
+
+            <div id="frame-7" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+TECLAS+WIN+L+(TELA+BLOQ)" class="scene-background" alt="Cenário: Tela bloqueada e teclas WIN+L">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(SORRINDO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li sorrindo">
+                <div class="dialogue-box">
+                    <p>Prática 2: Tela Bloqueada! Mesmo que seja só por um minutinho para o café... Windows + L resolve!</p>
+                </div>
+            </div>
+
+            <div id="frame-8" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+CAFÉ+(LISTA+DE+WI-FI)" class="scene-background" alt="Cenário: Lista de redes Wi-Fi públicas">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(DESCONFIADO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li desconfiado">
+                <div class="dialogue-box">
+                    <p>E quando estamos fora da cooperativa? Cuidado redobrado! Redes de Wi-Fi públicas são um perigo!</p>
+                </div>
+            </div>
+
+            <div id="frame-9" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+REDE+FALSA+(HACKER)" class="scene-background" alt="Cenário: Rede Wi-Fi falsa com hacker">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(ALERTA)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li em alerta">
+                <div class="dialogue-box">
+                    <p>Criminosos criam redes falsas, as 'Gêmeas Malignas', para roubar seus dados quando você se conecta!</p>
+                </div>
+            </div>
+
+            <div id="frame-10" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+TÚNEL+VPN+SEGURO" class="scene-background" alt="Cenário: Túnel VPN protegendo a conexão">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(SEGURO)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li seguro">
+                <div class="dialogue-box">
+                    <p>Prática 3: Na rua, só use a VPN da cooperativa! Ela criptografa sua conexão e deixa os bisbilhoteiros de mãos vazias.</p>
+                </div>
+            </div>
+
+            <div id="frame-11" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+PEN+DRIVE+(BÔNUS)+NO+CHÃO" class="scene-background" alt="Cenário: Pen drive 'Bônus 2025' no chão">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(PARE!)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li fazendo sinal de 'Pare'">
+                <div class="dialogue-box">
+                    <p>Epa, epa, epa! Achado não é roubado, mas pode ser algo muito perigoso!</p>
+                </div>
+            </div>
+
+            <div id="frame-12" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+TENTANDO+PLUGAR+PEN+DRIVE" class="scene-background" alt="Cenário: Mão plugando pen drive">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(PÂNICO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li em pânico">
+                <div class="dialogue-box">
+                    <p>NÃO PLUGUE! Isso é uma 'isca' clássica! Esse dispositivo pode conter um malware terrível, pronto para infectar toda a nossa rede!</p>
+                </div>
+            </div>
+
+            <div id="frame-13" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+PEN+DRIVE+OFICIAL+(TI)" class="scene-background" alt="Cenário: Pen drive oficial da cooperativa e ícone do TI">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(APROVADO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li aprovando">
+                <div class="dialogue-box">
+                    <p>Prática 4: Jamais use dispositivos pessoais ou achados! Use apenas os pen drives fornecidos pela cooperativa e, na dúvida, entregue o que achou para o TI!</p>
+                </div>
+            </div>
+
+            <div id="frame-14" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+EMAIL+COM+ANEXO+.EXE" class="scene-background" alt="Cenário: E-mail com anexo SoftwareGratis.exe">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(ALERTA)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li em alerta">
+                <div class="dialogue-box">
+                    <p>O mesmo vale para downloads! Aquele 'programa grátis' que você achou na internet pode custar muito caro para a cooperativa.</p>
+                </div>
+            </div>
+
+            <div id="frame-15" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+LUPA+NA+TELA+(ÍCONE+TI)" class="scene-background" alt="Cenário: Lupa inspecionando tela e ícone do TI">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(DETETIVE)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li de detetive">
+                <div class="dialogue-box">
+                    <p>Prática 5: Só baixe arquivos de fontes oficiais e autorizadas! Precisa de um programa novo? Peça para o nosso time de TI!</p>
+                </div>
+            </div>
+
+            <div id="frame-16" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+ÍCONES+DAS+5+PRÁTICAS" class="scene-background" alt="Cenário: Ícones de mesa limpa, tela bloqueada, vpn e pen drive seguro">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(ORGULHOSO)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li orgulhoso">
+                <div class="dialogue-box">
+                    <p>Mesa limpa, tela bloqueada, conexão segura e dispositivos confiáveis. Isso sim é segurança 360 graus!</p>
+                </div>
+            </div>
+
+            <div id="frame-17" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+FUNDO+LIMPO" class="scene-background" alt="Cenário: Fundo limpo">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(ACENANDO)" class="scene-mascot mascot-pos-direita" alt="Mascote Gri-Li acenando 'tchau'">
+                <div class="dialogue-box">
+                    <p>Lembre-se: no escritório ou fora dele, a segurança começa com você! Até a próxima!</p>
+                </div>
+            </div>
+
+            <div id="frame-18" class="frame">
+                <img src="https://via.placeholder.com/900x506/f0f0f0/cccccc?text=CENÁRIO:+CAPA+COM+CHAMADA+QUIZ" class="scene-background" alt="Cenário: Capa Final - Ir para o Quiz">
+                <img src="https://via.placeholder.com/250x250/61B01D/046727?text=MASCOTE:+GRI-LI+(APONTANDO+P/+BOTÃO)" class="scene-mascot mascot-pos-canto" alt="Mascote Gri-Li">
+                <div class="dialogue-box">
+                    <p>Pronto para testar seu conhecimento? Clique em 'IR PARA O QUIZZ' para continuar!</p>
+                </div>
+            </div>
+
+
+        </div> <div class="navigation-controls">
+            <button id="prev-btn">Anterior</button>
+            <span id="frame-counter">1 / 18</span>
+            <button id="next-btn">Próximo</button>
+        </div>
+
+    </div> <script>
+        /* * ===============================================
+         * JAVASCRIPT DO STORYBOOK
+         * IA Geradora: Geradôncius 3º
+         * Lógica de Navegação, Efeito Typewriter e Botão Final do Quiz
+         * ===============================================
+        */
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Seletores ---
+            const frames = document.querySelectorAll('.frame');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counter = document.getElementById('frame-counter');
+            
+            const totalFrames = frames.length;
+            let currentFrame = 0;
+            let currentTypewriterTimeout = null; // Para gerenciar o timeout
+
+            // --- Funções ---
+
+            /**
+             * Exibe um quadro (frame) específico.
+             * @param {number} index - O índice do quadro a ser exibido.
+             */
+            function showFrame(index) {
+                // Para o efeito de máquina de escrever anterior, se estiver em execução
+                if (currentTypewriterTimeout) {
+                    clearTimeout(currentTypewriterTimeout);
+                }
+
+                frames.forEach((frame, i) => {
+                    frame.classList.remove('active');
+                    const dialogueP = frame.querySelector('.dialogue-box p');
+                    
+                    if (i === index) {
+                        // Ativa o quadro correto
+                        frame.classList.add('active');
+                        
+                        // Inicia o efeito de máquina de escrever para o novo quadro
+                        if (dialogueP) {
+                            // Limpa o conteúdo antes de re-digitar
+                            dialogueP.innerHTML = ''; 
+                            dialogueP.classList.remove('typing-done'); // Reseta a classe do cursor
+                            typeWords(dialogueP);
+                        }
+                    } else {
+                         // Garante que o texto de quadros inativos seja resetado
+                         if (dialogueP) {
+                            dialogueP.innerHTML = '';
+                            dialogueP.classList.remove('typing-done');
+                         }
+                    }
+                });
+                
+                updateNavigation(index);
+            }
+
+            /**
+             * Atualiza o estado dos botões de navegação e do contador.
+             * MODIFICADO para lidar com o botão "IR PARA O QUIZZ"
+             * @param {number} index - O índice do quadro atual.
+             */
+            function updateNavigation(index) {
+                currentFrame = index;
+                counter.textContent = `${index + 1} / ${totalFrames}`;
+                
+                // Botão Anterior
+                prevBtn.disabled = (index === 0);
+
+                // Botão Próximo / Quiz (Lógica Modificada)
+                if (index === totalFrames - 1) {
+                    // Último quadro
+                    nextBtn.textContent = 'IR PARA O QUIZZ';
+                    nextBtn.disabled = false; // Garante que está habilitado
+                } else {
+                    // Quadros normais
+                    nextBtn.textContent = 'Próximo';
+                    nextBtn.disabled = false;
+                }
+            }
+
+            /**
+             * Aplica o efeito de máquina de escrever POR PALAVRA.
+             * @param {HTMLElement} element - O elemento <p> que contém o diálogo.
+             */
+            function typeWords(element) {
+                // Pega o texto completo do atributo data-text
+                const fullText = element.getAttribute('data-text');
+                if (!fullText) {
+                    element.classList.add('typing-done'); // Remove o cursor se não houver texto
+                    return; // Não faz nada se não houver texto
+                }
+
+                const words = fullText.split(' ');
+                let i = 0;
+                
+                function addWord() {
+                    if (i < words.length) {
+                        element.innerHTML += words[i] + ' ';
+                        i++;
+                        currentTypewriterTimeout = setTimeout(addWord, 100); // Velocidade (100ms por palavra)
+                    } else {
+                        element.classList.add('typing-done'); // Adiciona classe para remover o cursor
+                        currentTypewriterTimeout = null; // Limpa o timeout quando terminar
+                    }
+                }
+                
+                addWord(); // Inicia o processo
+            }
+
+            // --- Inicialização ---
+
+            // 1. Armazena o texto original de todos os diálogos em um atributo 'data-text'
+            //    Isso é crucial para que possamos re-digitar o texto ao voltar.
+            frames.forEach(frame => {
+                const dialogueP = frame.querySelector('.dialogue-box p');
+                if (dialogueP) {
+                    dialogueP.setAttribute('data-text', dialogueP.textContent.trim());
+                    dialogueP.innerHTML = ''; // Limpa o conteúdo inicial
+                }
+            });
+
+            // 2. Adiciona os Event Listeners aos botões
+            //    MODIFICADO para lidar com a ação do Quiz
+            nextBtn.addEventListener('click', () => {
+                if (currentFrame === totalFrames - 1) {
+                    // --- AÇÃO DO BOTÃO FINAL ---
+                    // No último quadro, o botão redireciona para o Quiz.
+                    
+                    // SUBSTITUA '#' PELO LINK REAL DO QUIZ
+                    console.log('AÇÃO: Redirecionando para o Quiz...');
+                    alert('Ação: IR PARA O QUIZ!\n(Substitua este alerta pelo link da página do quiz no JavaScript)');
+                    // window.location.href = '#'; // <--- INSIRA O LINK DO QUIZ AQUI
+
+                } else if (currentFrame < totalFrames - 1) {
+                    // Ação normal: Próximo quadro
+                    showFrame(currentFrame + 1);
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentFrame > 0) {
+                    showFrame(currentFrame - 1);
+                }
+            });
+
+            // 3. Exibe o primeiro quadro (Quadro 0)
+            showFrame(0);
+        });
+    </script>
+
+</body>
+</html>
