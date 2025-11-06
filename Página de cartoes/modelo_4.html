@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu de Treinamento em Cibersegurança v2</title>
+
+    <style>
+        /* --- Configurações Globais --- */
+        :root {
+            --cor-principal-azul: #007bff;
+            --cor-principal-azul-hover: #0056b3;
+            --cor-texto-principal: #333333;
+            --cor-texto-secundario: #666666;
+            --cor-fundo-pagina: #f4f7f6;
+            --cor-cartao: #FFFFFF;
+            /* Fundo colorido para a área da imagem, inspirado na referência */
+            --cor-fundo-imagem: #e6f2ff; /* Um azul muito claro */
+            --sombra-cartao: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --sombra-cartao-hover: 0 8px 20px rgba(0, 0, 0, 0.1); /* Sombra mais forte no hover */
+            --raio-borda: 16px;
+            
+            /* Duração da transição (mais rápida) */
+            --transicao-rapida: 0.15s ease-out;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--cor-fundo-pagina);
+            color: var(--cor-texto-principal);
+            line-height: 1.6;
+        }
+
+        /* --- Layout Principal (Grelha de Módulos) --- */
+        .menu-container {
+            display: grid;
+            /* NOVA REGRA: Tamanho Fixo
+              Cria colunas com 340px exatos. 'auto-fit' trata do wrapping.
+            */
+            grid-template-columns: repeat(auto-fit, 340px);
+            justify-content: center; /* Centra os cartões se não preencherem a linha */
+            gap: 24px;
+            padding: 24px;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        /* --- Estilo do Cartão (Baseado na Referência) --- */
+        .modulo-card {
+            width: 340px; /* Tamanho Fixo */
+            background-color: var(--cor-cartao);
+            border-radius: var(--raio-borda);
+            box-shadow: var(--sombra-cartao);
+            overflow: hidden;
+            /* TRANSIÇÃO MAIS RÁPIDA */
+            transition: transform var(--transicao-rapida), box-shadow var(--transicao-rapida);
+            cursor: pointer; /* O cartão todo é clicável */
+            
+            /* Evita que o texto seja selecionado ao clicar */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* --- Efeito Hover (Menos Suave) --- */
+        .modulo-card:hover {
+            transform: scale(1.03); /* Efeito um pouco mais pronunciado */
+            box-shadow: var(--sombra-cartao-hover);
+        }
+
+        /* NOVA ESTRUTURA: Imagem no Topo (Fiel à Referência)
+        */
+        .card-image-container {
+            height: 180px; /* Altura fixa para a imagem */
+            background-color: var(--cor-fundo-imagem);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Transição para a cor de fundo quando ativo */
+            transition: background-color 0.3s ease;
+        }
+
+        .card-image-container svg {
+            width: 60px;
+            height: 60px;
+            stroke: var(--cor-principal-azul);
+            stroke-width: 1.5;
+            transition: transform 0.3s ease;
+        }
+        
+        /* --- Corpo do Cartão --- */
+        .card-body {
+            padding: 24px;
+        }
+
+        .card-body h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--cor-texto-principal);
+            margin-bottom: 0; /* Margem movida para o 'card-content-hidden' */
+        }
+
+        /* NOVA ESTRUTURA: Conteúdo Escondido
+          Este 'div' envolve a descrição e o botão
+        */
+        .card-content-hidden {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-out, margin-top 0.4s ease-out;
+        }
+        
+        .card-content-hidden p {
+            color: var(--cor-texto-secundario);
+            margin-bottom: 16px;
+        }
+        
+        /* --- Botão "ACESSAR" --- */
+        .btn-acessar {
+            display: inline-block;
+            background-color: var(--cor-principal-azul);
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+            cursor: pointer; /* Garante que parece um botão */
+        }
+
+        .btn-acessar:hover {
+            background-color: var(--cor-principal-azul-hover);
+        }
+
+        /* --- Classe "Ativo" (Controlada por JavaScript) --- */
+        
+        /* Quando o cartão está ativo, o conteúdo expande */
+        .modulo-card.ativo .card-content-hidden {
+            max-height: 250px;
+            opacity: 1;
+            margin-top: 16px; /* Adiciona espaço entre o título e a descrição */
+        }
+
+        /* Bónus: Muda a cor do ícone quando ativo */
+        .modulo-card.ativo .card-image-container {
+            background-color: var(--cor-principal-azul);
+        }
+        .modulo-card.ativo .card-image-container svg {
+            stroke: #FFFFFF; /* Ícone fica branco */
+            transform: scale(1.1); /* Ícone cresce um pouco */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="menu-container">
+
+        <div class="modulo-card">
+            <div class="card-image-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <div class="card-body">
+                <h3>Começa Com Você</h3>
+                <div class="card-content-hidden">
+                    <p>O primeiro passo para a segurança começa com a sua consciencialização e as suas ações diárias.</p>
+                    <a href="#" class="btn-acessar">ACESSAR</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="modulo-card">
+            <div class="card-image-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </div>
+            <div class="card-body">
+                <h3>A Mente do Fraudador</h3>
+                <div class="card-content-hidden">
+                    <p>Entenda como pensam os atacantes e quais são as suas principais técnicas de engenharia social.</p>
+                    <a href="#" class="btn-acessar">ACESSAR</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modulo-card">
+            <div class="card-image-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <div class="card-body">
+                <h3>Phishing na Prática</h3>
+                <div class="card-content-hidden">
+                    <p>Aprenda a identificar e-mails, mensagens e websites falsos antes que eles causem danos.</p>
+                    <a href="#" class="btn-acessar">ACESSAR</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="modulo-card">
+            <div class="card-image-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <div class="card-body">
+                <h3>Suas Senhas, Seu Escudo</h3>
+                <div class="card-content-hidden">
+                    <p>Descubra como criar, gerir e proteger as suas credenciais de acesso de forma eficaz.</p>
+                    <a href="#" class="btn-acessar">ACESSAR</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="modulo-card">
+            <div class="card-image-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="card-body">
+                <h3>Dados do Cooperado</h3>
+                <div class="card-content-hidden">
+                    <p>A importância da privacidade e do tratamento correto das informações confidenciais.</p>
+                    <a href="#" class="btn-acessar">ACESSAR</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="modulo-card">
+            <div class="card-image-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"></path><path d="M13 13l6 6"></path></svg>
+            </div>
+            <div class="card-body">
+                <h3>Cuidado por Onde Anda</h3>
+                <div class="card-content-hidden">
+                    <p>Os riscos da navegação em redes Wi-Fi públicas e o uso seguro de dispositivos móveis.</p>
+                    <a href="#" class="btn-acessar">ACESSAR</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="modulo-card">
+            <div class="card-image-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            </div>
+            <div class="card-body">
+                <h3>A Visão do Líder</h3>
+                <div class="card-content-hidden">
+                    <p>O papel da liderança na promoção de uma cultura de segurança em toda a organização.</p>
+                    <a href="#" class="btn-acessar">ACESSAR</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="modulo-card">
+            <div class="card-image-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div class="card-body">
+                <h3>Juntos Somos Fortes</h3>
+                <div class="card-content-hidden">
+                    <p>Como reportar incidentes e por que a segurança é uma responsabilidade partilhada por todos.</p>
+                    <a href="#" class="btn-acessar">ACESSAR</a>
+                </div>
+            </div>
+        </div>
+
+    </div> <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Seleciona todos os cartões
+            const cards = document.querySelectorAll('.modulo-card');
+
+            cards.forEach(function(card) {
+                // Adiciona o "ouvinte" de clique ao CARTÃO INTEIRO
+                card.addEventListener('click', function(event) {
+                    
+                    // IMPORTANTE: Verifica se o clique foi no botão "ACESSAR"
+                    // event.target.closest('.btn-acessar') encontra o botão, mesmo que 
+                    // o clique seja num elemento dentro dele.
+                    if (event.target.closest('.btn-acessar')) {
+                        // Se o clique foi no botão, não faz nada (não expande/retrai).
+                        // O 'href' do botão funcionará normalmente.
+                        return;
+                    }
+
+                    // 'this' refere-se ao '.modulo-card' que foi clicado
+                    const clicadoCard = this;
+                    
+                    // Verifica se o cartão clicado já está ativo
+                    const estavaAtivo = clicadoCard.classList.contains('ativo');
+
+                    // 1. Fecha TODOS os cartões
+                    cards.forEach(function(c) {
+                        c.classList.remove('ativo');
+                    });
+
+                    // 2. Abre o cartão clicado (APENAS se não estava ativo)
+                    if (!estavaAtivo) {
+                        clicadoCard.classList.add('ativo');
+                    }
+                    
+                    // Se já estava ativo, o passo 1 já o fechou (efeito 'toggle').
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treinamento em Cibersegurança</title>
+
+    <style>
+        /* 1. Importação da Fonte e Reset Global */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        :root {
+            --cor-primaria: #1a73e8; /* Azul Google */
+            --cor-texto: #3c4043;
+            --cor-texto-secundario: #5f6368;
+            --cor-fundo: #f8f9fa;
+            --cor-branco: #ffffff;
+            --sombra-cartao: 0 4px 8px 0 rgba(0, 0, 0, 0.08);
+            --sombra-cartao-hover: 0 6px 12px 0 rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        /* 2. Layout Principal e Grid */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-principal {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header-principal h1 {
+            font-size: 2.5rem;
+            font-weight: 500;
+            color: var(--cor-texto);
+        }
+
+        .card-grid {
+            display: grid;
+            /* 4 colunas em desktops */
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* 3. Estilo dos Cartões */
+        .card {
+            background-color: var(--cor-branco);
+            border-radius: 8px;
+            box-shadow: var(--sombra-cartao);
+            cursor: pointer;
+            overflow: hidden; /* Essencial para a animação de 'max-height' */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+            box-shadow: var(--sombra-cartao-hover);
+        }
+        
+        /* Quando um cartão está ativo, não queremos o efeito de hover */
+        .card.active:hover {
+            transform: scale(1);
+        }
+
+        .card-front {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .icon-container {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            color: var(--cor-primaria); /* Cor do ícone */
+        }
+        
+        .icon-container svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .card-front h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            min-height: 3.75rem; /* Garante que os títulos tenham altura parecida */
+        }
+
+        /* 4. Conteúdo Expandido (Oculto por Padrão) */
+        .card-back {
+            /* Oculto por padrão */
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            padding: 0 2rem; /* Começa com padding 0 em cima/baixo */
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-out, padding 0.4s ease-out;
+            border-top: 1px solid #e0e0e0; /* Divisor sutil */
+        }
+
+        .card-back p {
+            font-size: 0.9rem;
+            color: var(--cor-texto-secundario);
+            margin-bottom: 1rem;
+            padding-top: 1rem; /* Adicionado na transição */
+        }
+
+        .button {
+            display: inline-block;
+            background-color: var(--cor-primaria);
+            color: var(--cor-branco);
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: background-color 0.2s ease;
+            margin-bottom: 1.5rem; /* Adicionado na transição */
+        }
+
+        .button:hover {
+            background-color: #1558b0; /* Azul mais escuro */
+        }
+
+        /* 5. Estado Ativo (Revelado) */
+        .card.active .card-back {
+            max-height: 300px; /* Valor alto para caber o conteúdo */
+            opacity: 1;
+        }
+
+        /* 6. Responsividade */
+        @media (max-width: 1024px) {
+            /* 2 colunas em tablets */
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header-principal h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            /* 1 coluna em smartphones */
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <main class="container">
+
+        <header class="header-principal">
+            <h1>Módulos de Treinamento</h1>
+        </header>
+
+        <div class="card-grid">
+
+            <div class="card">
+                <div class="card-front">
+                    <div class="icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+                    <h3>Começa Com Você</h3>
+                </div>
+                <div class="card-back">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Entenda seu papel fundamental na segurança da informação.</p>
+                    <a href="#" class="button">ACESSAR</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-front">
+                    <div class="icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-9.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zm4 0c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zm-2 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+                    </div>
+                    <h3>A Mente do Fraudador</h3>
+                </div>
+                <div class="card-back">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Conheça as táticas e motivações por trás dos ataques.</p>
+                    <a href="#" class="button">ACESSAR</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-front">
+                    <div class="icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 4H2v16h20V4zm-2 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    </div>
+                    <h3>Phishing na Prática</h3>
+                </div>
+                <div class="card-back">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aprenda a identificar e reportar e-mails e mensagens suspeitas.</p>
+                    <a href="#" class="button">ACESSAR</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-front">
+                    <div class="icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V11.99H5V6.3l7-3.11v8.8z"/></svg>
+                    </div>
+                    <h3>Suas Senhas, Seu Escudo</h3>
+                </div>
+                <div class="card-back">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Crie senhas fortes e gerencie suas credenciais com segurança.</p>
+                    <a href="#" class="button">ACESSAR</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-front">
+                    <div class="icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+                    </div>
+                    <h3>Dados do Cooperado</h3>
+                </div>
+                <div class="card-back">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. A importância da proteção de dados pessoais e sensíveis.</p>
+                    <a href="#" class="button">ACESSAR</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-front">
+                    <div class="icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM11 19.93C7.05 19.44 4 16.08 4 12s3.05-7.44 7-7.93v15.86zm2-15.86c3.95.49 7 3.85 7 7.93s-3.05 7.44-7 7.93V4.07z"/></svg>
+                    </div>
+                    <h3>Cuidado por Onde Anda</h3>
+                </div>
+                <div class="card-back">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Riscos de redes Wi-Fi públicas e navegação segura.</p>
+                    <a href="#" class="button">ACESSAR</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-front">
+                    <div class="icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12c-2.48 0-4.5-2.02-4.5-4.5s2.02-4.5 4.5-4.5 4.5 2.02 4.5 4.5-2.02 4.5-4.5 4.5zm0-7c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5z"/></svg>
+                    </div>
+                    <h3>A Visão do Líder</h3>
+                </div>
+                <div class="card-back">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. O papel da liderança na promoção de uma cultura de segurança.</p>
+                    <a href="#" class="button">ACESSAR</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-front">
+                    <div class="icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18h14v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V18h6v-1.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    </div>
+                    <h3>Juntos Somos Fortes</h3>
+                </div>
+                <div class="card-back">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Como reportar incidentes e trabalhar em equipe para proteger a todos.</p>
+                    <a href="#" class="button">ACESSAR</a>
+                </div>
+            </div>
+
+        </div> </main> <script>
+        // Espera o documento carregar para executar o script
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Seleciona todos os elementos com a classe '.card'
+            const cards = document.querySelectorAll('.card');
+
+            // Adiciona um 'ouvinte' de clique para cada cartão
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // Verifica se o cartão clicado já estava ativo
+                    const wasActive = card.classList.contains('active');
+
+                    // 1. Remove a classe 'active' de TODOS os cartões
+                    // Isso garante que qualquer cartão aberto se feche
+                    cards.forEach(c => {
+                        c.classList.remove('active');
+                    });
+
+                    // 2. Se o cartão clicado NÃO estava ativo, ele o ativa
+                    // Se ele já estava ativo (wasActive = true), ele apenas
+                    // permanecerá fechado, como resultado do passo 1.
+                    if (!wasActive) {
+                        card.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
