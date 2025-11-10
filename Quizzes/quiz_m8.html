@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Cibersegurança</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f4f7f6;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .quiz-wrapper {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 600px;
+        padding: 30px 40px;
+        overflow: hidden;  
+      }
+      h1 {
+        font-size: 1.5rem;
+        color: #005a9e;
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 25px;
+      }
+      .pergunta-container {
+        margin-bottom: 20px;
+      }
+      .pergunta-container p {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+      }
+      .opcoes {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .opcao {
+        display: block;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px 15px;
+        cursor: pointer;
+        transition: background-color 0.2s, border-color 0.2s;
+      }
+      .opcao:hover {
+        background-color: #f0f0f0;
+      }
+      .opcao input[type="radio"] {
+        display: none;  
+      }
+      .opcao .radio-custom {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #aaa;
+        border-radius: 50%;
+        margin-right: 12px;
+        vertical-align: middle;
+        transition: border-color 0.2s;
+      }
+      .opcao input[type="radio"]:checked + .radio-custom {
+        border-color: #005a9e;
+        background-color: #005a9e;
+        box-shadow: 0 0 0 2px white inset;
+      }
+      .opcao input[type="radio"]:checked + .radio-custom + span {
+        font-weight: 600;
+      }
+      .opcao span {
+        vertical-align: middle;
+      }
+      
+      .btn-nav {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background-color: #0073e6;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 30px;
+        transition: background-color 0.2s;
+      }
+      .btn-nav:hover {
+        background-color: #005a9e;
+      }
+      .btn-nav:disabled {
+        background-color: #a0a0a0;
+        cursor: not-allowed;
+      }
+      
+      /* --- Tela de Resultado --- */
+      #resultado-container {
+        text-align: center;
+      }
+      #resultado-container h2 {
+        font-size: 1.7rem;
+        color: #333;
+        margin-bottom: 15px;
+      }
+      #pontuacao-final {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 30px;
+      }
+      .score-red { color: #a91e1e; }
+      .score-yellow { color: #b58500; }
+      .score-green { color: #0d6b3a; }
+      
+      .result-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+      .btn-result {
+        display: inline-block;
+        padding: 12px 25px;
+        color: white;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      #btn-retry {
+        background-color: #0073e6;  
+      }
+      #btn-retry:hover {
+        background-color: #005a9e;
+      }
+      #btn-finish {
+        background-color: #6c757d;  
+      }
+      #btn-finish:hover {
+        background-color: #5a6268;
+      }
+      .hide {
+        display: none;
+      }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-wrapper">
+        <h1>Quiz: Reporte e Resposta a Incidentes</h1>
+
+        <div id="quiz-form">
+            <div class="pergunta-container" data-pergunta="0">
+                <p>1. De acordo com o texto, qual é o principal objetivo de uma "Cultura Livre de Culpa" (No-Blame Culture)?</p>
+                <div class="opcoes">
+                    <label class="opcao"><input type="radio" name="pergunta0" value="A"><span class="radio-custom"></span><span>A) Punir os colaboradores que cometem erros repetidamente.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta0" value="B"><span class="radio-custom"></span><span>B) Incentivar o reporte imediato de erros ou incidentes sem medo de punição.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta0" value="C"><span class="radio-custom"></span><span>C) Garantir que apenas a equipe de TI possa reportar problemas.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta0" value="D"><span class="radio-custom"></span><span>D) Implementar um sistema de bônus para quem não comete erros.</span></label>
+                </div>
+            </div>
+            <div class="pergunta-container hide" data-pergunta="1">
+                <p>2. Segundo o artigo, qual é a única e imediata responsabilidade de um colaborador ao perceber que cometeu um erro, como clicar em um link suspeito?</p>
+                <div class="opcoes">
+                    <label class="opcao"><input type="radio" name="pergunta1" value="A"><span class="radio-custom"></span><span>A) Reportar o fato imediatamente à equipe de TI e ao seu gestor.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta1" value="B"><span class="radio-custom"></span><span>B) Tentar rodar o antivírus e reiniciar a máquina para conter a ameaça.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta1" value="C"><span class="radio-custom"></span><span>C) Desligar o computador da tomada e esperar instruções.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta1" value="D"><span class="radio-custom"></span><span>D) Apagar o e-mail suspeito e continuar trabalhando para não gerar alarme.</span></label>
+                </div>
+            </div>
+            <div class="pergunta-container hide" data-pergunta="2">
+                <p>3. Se um colaborador suspeitar que seu computador foi infectado, qual ação o texto lista como algo que NÃO se deve fazer?</p>
+                <div class="opcoes">
+                    <label class="opcao"><input type="radio" name="pergunta2" value="A"><span class="radio-custom"></span><span>A) Desconectar o cabo de rede, se possível.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta2" value="B"><span class="radio-custom"></span><span>B) Reportar ao gestor e ao TI.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta2" value="C"><span class="radio-custom"></span><span>C) Tentar rodar o antivírus ou reiniciar a máquina.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta2" value="D"><span class="radio-custom"></span><span>D) Encaminhar a suspeita para o canal de segurança.</span></label>
+                </div>
+            </div>
+            <div class="pergunta-container hide" data-pergunta="3">
+                <p>4. Qual é o canal preferencial indicado para reportar uma suspeita não-emergencial, como ter recebido um e-mail de phishing (mas não ter clicado)?</p>
+                <div class="opcoes">
+                    <label class="opcao"><input type="radio" name="pergunta3" value="A"><span class="radio-custom"></span><span>A) Ligar imediatamente para o diretor da cooperativa.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta3" value="B"><span class="radio-custom"></span><span>B) Usar o telefone ou canal de emergência da TI.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta3" value="C"><span class="radio-custom"></span><span>C) Postar em um grupo de chat da equipe para alertar a todos.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta3" value="D"><span class="radio-custom"></span><span>D) E-mail para o canal oficial de reporte e para o DPO/Gestor.</span></label>
+                </div>
+            </div>
+            <div class="pergunta-container hide" data-pergunta="4">
+                <p>5. O texto menciona "Métricas de Sucesso Comportamental". Qual das seguintes é um exemplo dessa métrica?</p>
+                <div class="opcoes">
+                    <label class="opcao"><input type="radio" name="pergunta4" value="A"><span class="radio-custom"></span><span>A) A redução na taxa de cliques em simulações de phishing.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta4" value="B"><span class="radio-custom"></span><span>B) O número de ataques bloqueados pelo firewall.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta4" value="C"><span class="radio-custom"></span><span>C) A ausência total de qualquer incidente de segurança.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta4" value="D"><span class="radio-custom"></span><span>D) O custo total gasto em ferramentas de segurança.</span></label>
+                </div>
+            </div>
+            
+            <button type="button" class="btn-nav" id="btn-next" disabled>Próxima</button>
+        </div>
+
+        <div id="resultado-container" class="hide">
+            <h2>Quiz Concluído!</h2>
+            <p id="pontuacao-final">Você acertou 0 de 5!</p>
+            <div class="result-buttons">
+                <button type="button" class="btn-result" id="btn-retry">Tentar Novamente</button>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // *** GABARITO PREENCHIDO ***
+            const respostasCorretas = ['B', 'A', 'C', 'D', 'A'];
+
+            const totalPerguntas = respostasCorretas.length;
+            const userAnswers = new Array(totalPerguntas).fill(null);
+            let currentQuestionIndex = 0;
+
+            // Cache dos elementos DOM
+            const quizForm = document.getElementById('quiz-form');
+            const resultadoContainer = document.getElementById('resultado-container');
+            const btnNext = document.getElementById('btn-next');
+            const btnRetry = document.getElementById('btn-retry');
+            const btnFinish = document.getElementById('btn-finish');
+            const pontuacaoFinal = document.getElementById('pontuacao-final');
+            const perguntaContainers = document.querySelectorAll('.pergunta-container');
+            
+            quizForm.addEventListener('change', (event) => {
+                if(event.target.type === 'radio') {
+                    btnNext.disabled = false;
+                }
+            });
+
+            const showQuestion = (index) => {
+                perguntaContainers.forEach((container, i) => {
+                    if (i === index) {
+                        container.classList.remove('hide');
+                    } else {
+                        container.classList.add('hide');
+                    }
+                });
+
+                if (index === totalPerguntas - 1) {
+                    btnNext.textContent = 'Ver Resultado';
+                } else {
+                    btnNext.textContent = 'Próxima';
+                }
+                
+                btnNext.disabled = true;
+            };
+
+            const showResults = () => {
+                quizForm.classList.add('hide');
+                btnNext.classList.add('hide');
+
+                let pontuacao = 0;
+                userAnswers.forEach((answer, index) => {
+                    if (answer === respostasCorretas[index]) {
+                        pontuacao++;
+                    }
+                });
+
+                pontuacaoFinal.textContent = `Você acertou ${pontuacao} de ${totalPerguntas}!`;
+                
+                // --- LÓGICA DE COR ---
+                pontuacaoFinal.classList.remove('score-red', 'score-yellow', 'score-green'); // Reseta
+                if (pontuacao <= 3) {
+                    pontuacaoFinal.classList.add('score-red');
+                } else if (pontuacao === 4) {
+                    pontuacaoFinal.classList.add('score-yellow');
+                } else {
+                    pontuacaoFinal.classList.add('score-green');
+                }
+                // --- FIM DA LÓGICA DE COR ---
+
+                resultadoContainer.classList.remove('hide');
+            };
+
+            const restartQuiz = () => {
+                currentQuestionIndex = 0;
+                userAnswers.fill(null);
+
+                document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.checked = false;
+                });
+
+                resultadoContainer.classList.add('hide');
+                pontuacaoFinal.classList.remove('score-red', 'score-yellow', 'score-green'); // Reseta cor
+                quizForm.classList.remove('hide');
+                btnNext.classList.remove('hide');
+                showQuestion(0);
+            };
+
+            // --- AÇÕES DOS BOTÕES ---
+            btnNext.addEventListener('click', () => {
+                const radioChecked = document.querySelector(`input[name="pergunta${currentQuestionIndex}"]:checked`);
+                userAnswers[currentQuestionIndex] = radioChecked ? radioChecked.value : null;
+                
+                currentQuestionIndex++;
+
+                if (currentQuestionIndex < totalPerguntas) {
+                    showQuestion(currentQuestionIndex);
+                } else {
+                    showResults();
+                }
+            });
+
+            btnRetry.addEventListener('click', restartQuiz);
+
+            btnFinish.addEventListener('click', () => { 
+                history.back(); // Volta para a página anterior
+            });
+
+            // Inicia o quiz
+            showQuestion(0);
+        });
+    </script>
+</body>
+</html>

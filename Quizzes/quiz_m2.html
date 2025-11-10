@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Cibersegurança</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f4f7f6;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .quiz-wrapper {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 600px;
+        padding: 30px 40px;
+        overflow: hidden; 
+      }
+      h1 {
+        font-size: 1.5rem;
+        color: #005a9e;
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 25px;
+      }
+      .pergunta-container {
+        margin-bottom: 20px;
+      }
+      .pergunta-container p {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+      }
+      .opcoes {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .opcao {
+        display: block;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px 15px;
+        cursor: pointer;
+        transition: background-color 0.2s, border-color 0.2s;
+      }
+      .opcao:hover {
+        background-color: #f0f0f0;
+      }
+      .opcao input[type="radio"] {
+        display: none; 
+      }
+      .opcao .radio-custom {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #aaa;
+        border-radius: 50%;
+        margin-right: 12px;
+        vertical-align: middle;
+        transition: border-color 0.2s;
+      }
+      .opcao input[type="radio"]:checked + .radio-custom {
+        border-color: #005a9e;
+        background-color: #005a9e;
+        box-shadow: 0 0 0 2px white inset;
+      }
+      .opcao input[type="radio"]:checked + .radio-custom + span {
+        font-weight: 600;
+      }
+      .opcao span {
+        vertical-align: middle;
+      }
+     
+      .btn-nav {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background-color: #0073e6;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 30px;
+        transition: background-color 0.2s;
+      }
+      .btn-nav:hover {
+        background-color: #005a9e;
+      }
+      .btn-nav:disabled {
+        background-color: #a0a0a0;
+        cursor: not-allowed;
+      }
+     
+      /* --- Tela de Resultado --- */
+      #resultado-container {
+        text-align: center;
+      }
+      #resultado-container h2 {
+        font-size: 1.7rem;
+        color: #333;
+        margin-bottom: 15px;
+      }
+      #pontuacao-final {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 30px;
+      }
+      .score-red { color: #a91e1e; }
+      .score-yellow { color: #b58500; }
+      .score-green { color: #0d6b3a; }
+     
+      .result-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+      .btn-result {
+        display: inline-block;
+        padding: 12px 25px;
+        color: white;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      #btn-retry {
+        background-color: #0073e6; 
+      }
+      #btn-retry:hover {
+        background-color: #005a9e;
+      }
+      #btn-finish {
+        background-color: #6c757d; 
+      }
+      #btn-finish:hover {
+        background-color: #5a6268;
+      }
+      .hide {
+        display: none;
+      }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-wrapper">
+        <h1>Quiz: A Mente do Fraudador e Engenharia Social</h1>
+
+        <div id="quiz-form">
+            <div class="pergunta-container" data-pergunta="0">
+                <p>1. O que é Engenharia Social, de acordo com o artigo?</p>
+                <div class="opcoes">
+                    <label class="opcao"><input type="radio" name="pergunta0" value="A"><span class="radio-custom"></span><span>A) Uma falha técnica complexa em sistemas de criptografia.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta0" value="B"><span class="radio-custom"></span><span>B) A arte de manipular pessoas para obter informações confidenciais ou ações inseguras.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta0" value="C"><span class="radio-custom"></span><span>C) Um tipo de software malicioso que explora apenas falhas de hardware.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta0" value="D"><span class="radio-custom"></span><span>D) Uma política de segurança interna das cooperativas de crédito.</span></label>
+                </div>
+            </div>
+            <div class="pergunta-container hide" data-pergunta="1">
+                <p>2. Quais são os três principais gatilhos psicológicos explorados pelos fraudadores mencionados no texto?</p>
+                <div class="opcoes">
+                    <label class="opcao"><input type="radio" name="pergunta1" value="A"><span class="radio-custom"></span><span>A) Pressa, Medo e Curiosidade.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta1" value="B"><span class="radio-custom"></span><span>B) Confiança, Boa vontade e Cortesia.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta1" value="C"><span class="radio-custom"></span><span>C) Autoridade, Conhecimento Técnico e Paciência.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta1" value="D"><span class="radio-custom"></span><span>D) Medo, Ganância e Desejo de Ajudar.</span></label>
+                </div>
+            </div>
+            <div class="pergunta-container hide" data-pergunta="2">
+                <p>3. Como o artigo define o "Vishing"?</p>
+                <div class="opcoes">
+                    <label class="opcao"><input type="radio" name="pergunta2" value="A"><span class="radio-custom"></span><span>A) Um ataque de phishing realizado através de e-mails que imitam o RH.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta2" value="B"><span class="radio-custom"></span><span>B) Uma manipulação psicológica usando a curiosidade como isca (baiting).</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta2" value="C"><span class="radio-custom"></span><span>C) Um ataque de phishing realizado por meio de ligações telefônicas (Phishing por Voz).</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta2" value="D"><span class="radio-custom"></span><span>D) Um golpe aplicado exclusivamente por mensagens de WhatsApp (Smishing).</span></label>
+                </div>
+            </div>
+            <div class="pergunta-container hide" data-pergunta="3">
+                <p>4. No exemplo de Phishing por e-mail dado no texto, qual tática o fraudador usa?</p>
+                <div class="opcoes">
+                    <label class="opcao"><input type="radio" name="pergunta3" value="A"><span class="radio-custom"></span><span>A) Ligar para o colaborador fingindo ser um técnico de TI.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta3" value="B"><span class="radio-custom"></span><span>B) Enviar uma mensagem de WhatsApp com um número provisório de gerente.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta3" value="C"><span class="radio-custom"></span><span>C) Deixar um dispositivo infectado (como um pendrive) para ser encontrado.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta3" value="D"><span class="radio-custom"></span><span>D) Enviar um e-mail falso do RH solicitando login e senha para uma "Atualização Obrigatória".</span></label>
+                </div>
+            </div>
+            <div class="pergunta-container hide" data-pergunta="4">
+                <p>5. Qual é a regra de ouro de três passos recomendada pelo artigo como a defesa mais eficaz contra a Engenharia Social?</p>
+                <div class="opcoes">
+                    <label class="opcao"><input type="radio" name="pergunta4" value="A"><span class="radio-custom"></span><span>A) Parar, Pensar e Verificar.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta4" value="B"><span class="radio-custom"></span><span>B) Clicar, Informar e Confirmar.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta4" value="C"><span class="radio-custom"></span><span>C) Confiar, Ajudar e Resolver.</span></label>
+                    <label class="opcao"><input type="radio" name="pergunta4" value="D"><span class="radio-custom"></span><span>D) Ignorar, Deletar e Esquecer.</span></label>
+                </div>
+            </div>
+           
+            <button type="button" class="btn-nav" id="btn-next" disabled>Próxima</button>
+        </div>
+
+        <div id="resultado-container" class="hide">
+            <h2>Quiz Concluído!</h2>
+            <p id="pontuacao-final">Você acertou 0 de 5!</p>
+            <div class="result-buttons">
+                <button type="button" class="btn-result" id="btn-retry">Tentar Novamente</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // *** VOCÊ DEVE PREENCHER ESTE ARRAY ***
+            const respostasCorretas = ['B', 'A', 'C', 'D', 'A']; // Respostas: P1, P2, P3, P4, P5
+
+            const totalPerguntas = respostasCorretas.length;
+            const userAnswers = new Array(totalPerguntas).fill(null);
+            let currentQuestionIndex = 0;
+
+            // Cache dos elementos DOM
+            const quizForm = document.getElementById('quiz-form');
+            const resultadoContainer = document.getElementById('resultado-container');
+            const btnNext = document.getElementById('btn-next');
+            const btnRetry = document.getElementById('btn-retry');
+            const btnFinish = document.getElementById('btn-finish'); 
+            const pontuacaoFinal = document.getElementById('pontuacao-final');
+            const perguntaContainers = document.querySelectorAll('.pergunta-container');
+           
+            quizForm.addEventListener('change', (event) => {
+                if(event.target.type === 'radio') {
+                    btnNext.disabled = false;
+                }
+            });
+
+            const showQuestion = (index) => {
+                perguntaContainers.forEach((container, i) => {
+                    if (i === index) {
+                        container.classList.remove('hide');
+                    } else {
+                        container.classList.add('hide');
+                    }
+                });
+
+                if (index === totalPerguntas - 1) {
+                    btnNext.textContent = 'Ver Resultado';
+                } else {
+                    btnNext.textContent = 'Próxima';
+                }
+               
+                btnNext.disabled = true;
+            };
+
+            const showResults = () => {
+                quizForm.classList.add('hide');
+                btnNext.classList.add('hide');
+
+                let pontuacao = 0;
+                userAnswers.forEach((answer, index) => {
+                    if (answer === respostasCorretas[index]) {
+                        pontuacao++;
+                    }
+                });
+
+                pontuacaoFinal.textContent = `Você acertou ${pontuacao} de ${totalPerguntas}!`;
+               
+                // --- LÓGICA DE COR ---
+                pontuacaoFinal.classList.remove('score-red', 'score-yellow', 'score-green'); // Reseta
+                if (pontuacao <= 3) {
+                    pontuacaoFinal.classList.add('score-red');
+                } else if (pontuacao === 4) {
+                    pontuacaoFinal.classList.add('score-yellow');
+                } else {
+                    pontuacaoFinal.classList.add('score-green');
+                }
+                // --- FIM DA LÓGICA DE COR ---
+
+                resultadoContainer.classList.remove('hide');
+            };
+
+            const restartQuiz = () => {
+                currentQuestionIndex = 0;
+                userAnswers.fill(null);
+
+                document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.checked = false;
+                });
+
+                resultadoContainer.classList.add('hide');
+                pontuacaoFinal.classList.remove('score-red', 'score-yellow', 'score-green'); // Reseta cor
+                quizForm.classList.remove('hide');
+                btnNext.classList.remove('hide');
+                showQuestion(0);
+            };
+
+            // --- AÇÕES DOS BOTÕES ---
+            btnNext.addEventListener('click', () => {
+                const radioChecked = document.querySelector(`input[name="pergunta${currentQuestionIndex}"]:checked`);
+                userAnswers[currentQuestionIndex] = radioChecked ? radioChecked.value : null;
+               
+                currentQuestionIndex++;
+
+                if (currentQuestionIndex < totalPerguntas) {
+                    showQuestion(currentQuestionIndex);
+                } else {
+                    showResults();
+                }
+            });
+
+            btnRetry.addEventListener('click', restartQuiz);
+
+            btnFinish.addEventListener('click', () => { 
+                history.back(); // Volta para a página anterior
+            });
+
+            // Inicia o quiz
+            showQuestion(0);
+        });
+    </script>
+</body>
+</html>
