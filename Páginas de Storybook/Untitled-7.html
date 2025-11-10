@@ -18,7 +18,7 @@
             --green-dark: #046727;
             --green-light: #61B01D;
             --text-dark: #222;
-            --dialogue-bg: rgba(4, 103, 39, 0.9); /* Verde escuro com transparência */
+            --dialogue-bg: rgba(255, 255, 255, 0.9); /* Verde escuro com transparência */
             --dialogue-border: var(--green-light);
         }
 
@@ -30,7 +30,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #333;
+            background-color: #f0f0f0;
             color: var(--text-dark);
             display: flex;
             justify-content: center;
@@ -455,7 +455,7 @@
                 updateNavigation(index);
             }
 
-            /**
+             /**
              * Atualiza o estado dos botões de navegação e do contador.
              * @param {number} index - O índice do quadro atual.
              */
@@ -463,19 +463,8 @@
                 currentFrame = index;
                 counter.textContent = `${index + 1} / ${totalFrames}`;
                 
-                // Habilita/Desabilita "Anterior"
                 prevBtn.disabled = (index === 0);
-
-                // Lógica do botão "Próximo" / "Ir para o Quiz"
-                if (index === totalFrames - 1) {
-                    // Último quadro
-                    nextBtn.textContent = 'IR PARA O QUIZZ';
-                    nextBtn.disabled = false; // Garante que está habilitado
-                } else {
-                    // Quadros normais
-                    nextBtn.textContent = 'Próximo';
-                    nextBtn.disabled = false;
-                }
+                nextBtn.disabled = (index === totalFrames - 1);
             }
 
             /**

@@ -30,7 +30,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #333;
+            background-color: #f0f0f0;
             color: var(--text-dark);
             display: flex;
             justify-content: center;
@@ -437,7 +437,7 @@
                 updateNavigation(index);
             }
 
-            /**
+             /**
              * Atualiza o estado dos botões de navegação e do contador.
              * @param {number} index - O índice do quadro atual.
              */
@@ -446,16 +446,7 @@
                 counter.textContent = `${index + 1} / ${totalFrames}`;
                 
                 prevBtn.disabled = (index === 0);
-                
-                // O botão "próximo" NUNCA é desabilitado,
-                // pois no último frame ele vira o link do Quizz.
-                nextBtn.disabled = false; 
-
-                if (index === totalFrames - 1) {
-                    nextBtn.textContent = 'IR PARA O QUIZZ';
-                } else {
-                    nextBtn.textContent = 'Próximo';
-                }
+                nextBtn.disabled = (index === totalFrames - 1);
             }
 
             /**
